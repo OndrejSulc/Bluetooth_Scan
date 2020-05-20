@@ -18,12 +18,12 @@ System is composed of multiple **sensors** and one **controller**. Each **sensor
 const char* networkSSID = "";  // your WiFi SSID
 const char* networkPW = "";    // your WiFi password
 
-const char* mqttServer = "";   // IPv4 address to your MQTT Broker
+const char* mqttServer = "192.168.1.15";   // IPv4 address to your MQTT Broker
 const int mqttPort = 1883;     // Port at which MQTT Broker is listening (1883 is standard for MQTT protocol)
 
 const char* mqttID = "testTopic/ESP01"; // your_topic/your_subtopic/your_sensor_ID (subtopics are not required)
-const char* mqttUser = "";     // user name to your MQTT Broker
-const char* mqttPW = "";       // user password to your MQTT Broker
+const char* mqttUser = "user";     // user name to your MQTT Broker
+const char* mqttPW = "user123pw";       // user password to your MQTT Broker
 
 //////////////////////////////////////////
 ```
@@ -42,8 +42,8 @@ namespace ICSController
 
         // MQTT Broker connection info
         public const string MqttServerIP = "192.168.1.15";   // IPv4 address to your MQTT Broker, port is always 1883
-        public const string MqttServerUser = "luni";         // user name to your MQTT Broker
-        public const string MqttServerPW = "1641999";        // user password to your MQTT Broker
+        public const string MqttServerUser = "user";         // user name to your MQTT Broker
+        public const string MqttServerPW = "user123pw";        // user password to your MQTT Broker
         public const string MqttServerTopic = "testTopic/#"; // your_topic/#
         //
   ```
