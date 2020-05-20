@@ -13,7 +13,7 @@ const char* networkPW = "";
 const char* mqttServer = "";
 const int mqttPort = 1883;
 
-const char* mqttID = "";
+const char* mqttID = "ESP01"; //max 5 chars
 const char* mqttUser = "";
 const char* mqttPW = "";
 
@@ -25,6 +25,16 @@ PubSubClient mqttClient(espClient);
 
 //const int RSSI_CUTOFF = -60;
 
+void blinkLED(int count, int delaytime)
+{
+  for (int i=0;i<count;i++)
+  {
+    digitalWrite(2, HIGH); 
+    delay(delaytime);           
+    digitalWrite(2, LOW);  
+    delay(delaytime); 
+  }
+}
 
 void setupBluetooth()
 {
@@ -39,8 +49,8 @@ void setupWifi()
  
   while (WiFi.status() != WL_CONNECTED)
   {
-    delay(500);
     Serial.println("Connecting to WiFi..");
+    blinkLED(3,1000);
   }
   
   Serial.println("Connected to the WiFi network");
@@ -62,7 +72,8 @@ void setupMQTTclient()
     } 
     else 
     {
-      delay(500);
+      Serial.println("Connection to the MQTT server failed.. new attempt");
+      blinkLED(3,1000);
     }
   } 
 }
@@ -72,18 +83,37 @@ void setup()
 {
   Serial.begin(115200);
 
+  pinMode(2, OUTPUT);    // sets the digital pin 2 as output
+  
+  blinkLED(2,500);
+  
+  
   setupBluetooth();
 
+  blinkLED(2,500);
+
   setupWifi();
+
+  blinkLED(2,500);
   
   setupMQTTclient();
+
+  blinkLED(2,500);
 
   Serial.println("Sensor is ready");
  
 }
 
-void loop() {
+void loop()
+{
+  digitalWrite(2, LOW);
+  // This is needed at the top of the loop!
+  mqttClient.loop();
 
+  // Ensure that we are subscribed to the topic "testTopic"
+  mqttClient.subscribe("testTopic"); 
+
+  
   Serial.println("\n------------- BEGIN -------------------\n");
  
   BLEScan *scan = BLEDevice::getScan();
@@ -101,10 +131,11 @@ void loop() {
     std::string addSTR = address.toString();
 
     char mqttMessage[40];
-   
-    strcpy(mqttMessage,"ESP32;");
+
+    strcpy(mqttMessage,mqttID);
+    strcat(mqttMessage,";");
     
-    strcat(mqttMessage,device.getName().c_str());
+    //strcat(mqttMessage,device.getName().c_str());
     strcat(mqttMessage,";");
     
     strcat(mqttMessage,addSTR.c_str()); 
@@ -115,14 +146,7 @@ void loop() {
     
     strcat(mqttMessage,rssiStr);   
     strcat(mqttMessage,";");
-    
-   
-    // This is needed at the top of the loop!
-    mqttClient.loop();
-  
-    // Ensure that we are subscribed to the topic "testTopic"
-    mqttClient.subscribe("testTopic");
-  
+
     // Attempt to publish a value to the topic "testTopic"
     if(mqttClient.publish("testTopic", mqttMessage))
     {

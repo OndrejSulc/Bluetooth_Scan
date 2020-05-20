@@ -10,26 +10,41 @@ namespace ICSControler
 {
     class Program
     {
+
+        // MQTT Broker connection info
+        public const string MqttServerIP = "192.168.1.15";
+        public const string MqttServerUser = "luni";
+        public const string MqttServerPW = "1641999";
+        public const string MqttServerTopic = "testTopic";
+        //
+
+        // Functionality setup
+        public const int EvaluationIntervalMiliseconds = 10_000;
+        public const int RssiCutoff = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
+        //
+
+        // global data
         public static List<Measurement> RecievedMeasurements = new List<Measurement>();
         private static readonly object RMlock = new object();
+        //
+
 
         static void Main(string[] args)
         {
             //setup connection to mqtt broker
-            var client = new MqttClient("192.168.1.15");
+            var client = new MqttClient(MqttServerIP);
 
             client.MqttMsgPublishReceived += MeasurementRecieved;
 
             var clientId = Guid.NewGuid().ToString();
-            client.Connect(clientId,"luni","1641999");
+            client.Connect(clientId, MqttServerUser, MqttServerPW);
 
             client.Subscribe(
-                new string[] { "testTopic" },
+                new string[] { MqttServerTopic },
                 new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
             //
 
-
-
+            Console.WriteLine("Controler running...");
             //continue to evaluation loop
             EvaluationThread();
         }
@@ -108,9 +123,7 @@ namespace ICSControler
             while (true) 
             {
                 //wait for next evaluation window
-                Thread.Sleep(7_000);
-                Console.WriteLine("evaluation begins in 3 seconds");
-                Thread.Sleep(3_000);
+                Thread.Sleep(EvaluationIntervalMiliseconds);
                 Console.WriteLine("evaluation began with "+ RecievedMeasurements.Count + " recieved messages");
 
                 if (RecievedMeasurements.Count == 0) 
@@ -178,7 +191,11 @@ namespace ICSControler
 
                 for (byte i = 0; i < MeasurementEvaluationList.Count; i++)
                 {
-                    MeasurementEvaluationList[i].ConsolePrint();
+                    if (MeasurementEvaluationList[i].RSSI < RssiCutoff || RssiCutoff == 0)
+                    {
+                        MeasurementEvaluationList[i].ConsolePrint();
+                    }
+                    
                 }
                 Console.WriteLine("--------------------");
                 Console.WriteLine("evaluation ended");
