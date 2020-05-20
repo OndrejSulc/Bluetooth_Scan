@@ -13,7 +13,7 @@ const char* networkPW = "";
 const char* mqttServer = "";
 const int mqttPort = 1883;
 
-const char* mqttID = "ESP01"; //max 5 chars
+const char* mqttID = "testTopic/ESP01"; // topic/sensorID
 const char* mqttUser = "";
 const char* mqttPW = "";
 
@@ -21,9 +21,6 @@ const char* mqttPW = "";
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
-
-
-//const int RSSI_CUTOFF = -60;
 
 void blinkLED(int count, int delaytime)
 {
@@ -111,7 +108,7 @@ void loop()
   mqttClient.loop();
 
   // Ensure that we are subscribed to the topic "testTopic"
-  mqttClient.subscribe("testTopic"); 
+  mqttClient.subscribe(mqttID); 
 
   
   Serial.println("\n------------- BEGIN -------------------\n");
@@ -132,10 +129,8 @@ void loop()
 
     char mqttMessage[40];
 
-    strcpy(mqttMessage,mqttID);
-    strcat(mqttMessage,";");
-    
-    //strcat(mqttMessage,device.getName().c_str());
+  
+    strcpy(mqttMessage,device.getName().c_str());
     strcat(mqttMessage,";");
     
     strcat(mqttMessage,addSTR.c_str()); 
@@ -147,8 +142,8 @@ void loop()
     strcat(mqttMessage,rssiStr);   
     strcat(mqttMessage,";");
 
-    // Attempt to publish a value to the topic "testTopic"
-    if(mqttClient.publish("testTopic", mqttMessage))
+    // Attempt to publish a value to the topic
+    if(mqttClient.publish( mqttID, mqttMessage))
     {
       Serial.print("Published: ");
       Serial.println(mqttMessage);
