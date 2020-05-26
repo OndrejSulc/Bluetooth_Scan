@@ -7,8 +7,8 @@ namespace ICSController
 {
     class Evaluation
     {
-        private static List<Measurement> MeasurementEvaluationList;
-        private static Measurement processed;
+        private static List<Measurement> measurementEvaluationList;
+        private static Measurement processedMeasurement;
 
         /// <summary>
         /// Main function for evaluation thread
@@ -19,26 +19,21 @@ namespace ICSController
             {
                 WaitForEvalWindow();
 
-                MeasurementEvaluationList = new List<Measurement>();
+                measurementEvaluationList = new List<Measurement>();
                 DateTime evaluationBegin = DateTime.Now;
 
                 while (true)
                 {
-                    Console.WriteLine("processing");
+                    processedMeasurement = SavedMeasurements.PopMeasurement();
+
                     // this is here in case, there won´t come any messages during evaluation
-                    if (Program.ReceivedMeasurements.Count == 0)
+                    if (processedMeasurement == null)
                     {
                         break;
                     }
-
-                    // take first measurement and process it on free lock
-                    lock (Program.RMlock)
-                    {
-                        processed = Program.ReceivedMeasurements[0];
-                    }
-
+                   
                     // if processed measurement came after evaluation begun, then ignore, break and print evaluation results 
-                    if (DateTime.Compare(evaluationBegin, processed.Time) < 0)
+                    if (DateTime.Compare(evaluationBegin, processedMeasurement.Time) < 0)
                     {
                         break;
                     }
@@ -47,18 +42,11 @@ namespace ICSController
                     if ( !PlaceIfSameMAC() )
                     {
                         //add new item in list on new MAC
-                        MeasurementEvaluationList.Add(processed);
-                    }
-
-                    //remove first measurement from list after processing on free lock
-                    lock (Program.RMlock)
-                    {
-                        Program.ReceivedMeasurements.Remove(processed);
+                        measurementEvaluationList.Add( processedMeasurement );
                     }
                 }
 
                 PrintResults(evaluationBegin);
-
             }
         }
 
@@ -72,14 +60,14 @@ namespace ICSController
             bool registeredMAC = false;
 
             //search for same MAC in processed measurements
-            for (byte i = 0; i < MeasurementEvaluationList.Count; i++)
+            for (byte i = 0; i < measurementEvaluationList.Count; i++)
             {
-                if (MeasurementEvaluationList[i].BLE_MAC == processed.BLE_MAC)
+                if (measurementEvaluationList[i].BLE_MAC == processedMeasurement.BLE_MAC)
                 {
-                    if (MeasurementEvaluationList[i].BLE_RSSI < processed.BLE_RSSI)
+                    if (measurementEvaluationList[i].BLE_RSSI < processedMeasurement.BLE_RSSI)
                     {
                         //replace measurement if higher RSSI
-                        MeasurementEvaluationList[i] = processed;
+                        measurementEvaluationList[i] = processedMeasurement;
                     }
                     registeredMAC = true;
                     break;
@@ -99,9 +87,9 @@ namespace ICSController
             {
                 //wait for next evaluation window
                 Thread.Sleep(Program.EvaluationIntervalMiliseconds);
-                Console.WriteLine("evaluation began with " + Program.ReceivedMeasurements.Count + " received messages");
+                Console.WriteLine("evaluation began with " + SavedMeasurements.GetCountOfMeasurements() + " received messages");
 
-                if (Program.ReceivedMeasurements.Count == 0)
+                if ( SavedMeasurements.IsEmpty() )
                 {
                     Console.WriteLine("evaluation aborted");
                     continue;
@@ -125,11 +113,11 @@ namespace ICSController
             Console.WriteLine("Evaluation results at " + evaluationBegin + ":");
             Console.WriteLine("--------------------");
 
-            for (byte i = 0; i < MeasurementEvaluationList.Count; i++)
+            for (byte i = 0; i < measurementEvaluationList.Count; i++)
             {
-                if (MeasurementEvaluationList[i].BLE_RSSI < Program.RssiCutoff || Program.RssiCutoff == 0)
+                if (measurementEvaluationList[i].BLE_RSSI < Program.RssiCutoff || Program.RssiCutoff == 0)
                 {
-                    MeasurementEvaluationList[i].ConsolePrint();
+                    measurementEvaluationList[i].ConsolePrint();
                 }
 
             }

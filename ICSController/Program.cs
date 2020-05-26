@@ -12,37 +12,29 @@ namespace ICSController
     {
 
         // MQTT Broker connection info
-        public const string MqttServerIP = "192.168.1.15";
-        public const string MqttServerUser = "luni";
-        public const string MqttServerPW = "1641999";
-        public const string MqttServerTopic = "testTopic/#";
+        public const string mqttServerIP = "192.168.1.15";
+        public const string mqttServerUser = "luni";
+        public const string mqttServerPW = "1641999";
+        public const string mqttServerTopic = "testTopic/#";
         //
-
 
         // Functionality setup
         public static int EvaluationIntervalMiliseconds { get; set; } = 10_000;
         public static int RssiCutoff { get; set; } = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
         //
 
-
-        // global data
-        public static List<Measurement> ReceivedMeasurements { get; set; } = new List<Measurement>();
-        public static object RMlock { get; set; } = new object();
-        //
-
-
         static void Main(string[] args)
         {
             //setup connection to MQTT Broker
-            var client = new MqttClient(MqttServerIP);
+            var client = new MqttClient(mqttServerIP);
 
             client.MqttMsgPublishReceived += MqttMessageCapturing.MeasurementRecieved;
 
             var clientId = Guid.NewGuid().ToString();
-            client.Connect(clientId, MqttServerUser, MqttServerPW);
+            client.Connect(clientId, mqttServerUser, mqttServerPW);
 
             client.Subscribe(
-                new string[] { MqttServerTopic },
+                new string[] { mqttServerTopic },
                 new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
             //
 

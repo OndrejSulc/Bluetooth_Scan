@@ -101,12 +101,10 @@ namespace ICSController
             Console.WriteLine("\nreceived measurement");
             newMeasurement.ConsolePrint();
 
-            //assign to list on free lock
-            lock (Program.RMlock)
-            {
-                Program.ReceivedMeasurements.Add(newMeasurement);
-                Console.WriteLine("Count of received: " + Program.ReceivedMeasurements.Count);
-            }
+            //add to list of saved measurements
+            int countOfMeasurements = SavedMeasurements.AddMeasurementReturnCount(newMeasurement);
+            Console.WriteLine("Count of received: " + countOfMeasurements);
+
         }
 
 
