@@ -35,10 +35,12 @@ namespace ICSController
         public static int AddMeasurementReturnCount(Measurement newMeasurement)
         {
             bool returnVal = AddMeasurement(newMeasurement);
+
             if (returnVal)
             {
                 return receivedMeasurements.Count;
             }
+
             return -1;
         }
 
@@ -53,6 +55,7 @@ namespace ICSController
             if (receivedMeasurements.Count > 0)
             {
                 Measurement returnedMeasurement;
+
                 lock (rmLock)
                 {
                     returnedMeasurement = receivedMeasurements[0];

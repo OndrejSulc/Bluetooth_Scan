@@ -27,23 +27,16 @@ namespace ICSController
                     processedMeasurement = SavedMeasurements.PopMeasurement();
 
                     // this is here in case, there won´t come any messages during evaluation
-                    if (processedMeasurement == null)
-                    {
+                    if ( processedMeasurement == null )
                         break;
-                    }
-                   
+                    
                     // if processed measurement came after evaluation begun, then ignore, break and print evaluation results 
-                    if (DateTime.Compare(evaluationBegin, processedMeasurement.Time) < 0)
-                    {
+                    if ( DateTime.Compare( evaluationBegin, processedMeasurement.Time ) < 0)
                         break;
-                    }
-
+                    
                     // process measurement if same MAC already occurred
                     if ( !PlaceIfSameMAC() )
-                    {
-                        //add new item in list on new MAC
                         measurementEvaluationList.Add( processedMeasurement );
-                    }
                 }
 
                 PrintResults(evaluationBegin);
@@ -113,13 +106,12 @@ namespace ICSController
             Console.WriteLine("Evaluation results at " + evaluationBegin + ":");
             Console.WriteLine("--------------------");
 
-            for (byte i = 0; i < measurementEvaluationList.Count; i++)
+            //for (byte i = 0; i < measurementEvaluationList.Count; i++)
+            foreach (var measurementInList in measurementEvaluationList )
             {
-                if (measurementEvaluationList[i].BLE_RSSI < Program.RssiCutoff || Program.RssiCutoff == 0)
-                {
-                    measurementEvaluationList[i].ConsolePrint();
-                }
-
+                if ( (measurementInList.BLE_RSSI > Program.RssiCutoff) || Program.RssiCutoff == 0)
+                    measurementInList.ConsolePrint();
+                   
             }
             Console.WriteLine("--------------------");
             Console.WriteLine("evaluation ended");
