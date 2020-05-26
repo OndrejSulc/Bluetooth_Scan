@@ -1,15 +1,15 @@
 ﻿# BLE based presence detection system 
 
 ## How does it work?
-System is composed of multiple **sensors** and one **controller**. Each **sensor** represents ESP32 board with BLE and WiFi modules. **Controller** is application running on network device.
+System is composed of multiple **sensors** and one **controller**. Each **sensor** is represented by ESP32 board with BLE and WiFi modules. **Controller** is application running on network device.
 
-**Sensors** regularly scan their surroundings for any devices with BLE. Then they send collected data over MQTT protocol to **controller**.
+**Sensors** regularly scan their surroundings for any devices having their BLE turned on. Then they send collected data over MQTT protocol to **controller**.
 
 **Controller** then time from time evaluates data by finding sensor with the strongest RSSI at each scanned device for that particular scanning period. 
 
 ## Setting up
 ### Sensor on ESP32 board using Arduino IDE
- 1) Open ESP32cidlo.ino file in [Arduino IDE](https://www.arduino.cc/en/Main/Software).
+ 1) Open **ESP32cidlo.ino** file in [Arduino IDE](https://www.arduino.cc/en/Main/Software).
  2) Change constant at the top of program corresponding to your network.
 
 ```C++
@@ -27,9 +27,10 @@ const char* mqttPW = "user123pw";       // user password to your MQTT Broker
 
 //////////////////////////////////////////
 ```
- 3) Plug ESP32 board to your computer
- 4) Set relevant port at Tools
- 5) Compile and upload to ESP32
+ 3) Plug in ESP32 board to your computer
+ 4) Download needed libraries using IDE (Project>Add library>Manage libraries) 
+ 5) Set relevant port at Tools
+ 6) Compile and upload to ESP32
 
  ### Controller on your computer using Visual Studio
   1) Open ICSController.sln using Visual Studio
