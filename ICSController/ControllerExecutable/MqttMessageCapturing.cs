@@ -20,7 +20,7 @@ namespace ICSController
         /// <summary>
         /// Main function for message capturing thread
         /// </summary>
-        public static void MeasurementRecieved(object sender, MqttMsgPublishEventArgs e)
+        public static void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
         {
             msgSensorCategory = e.Topic;
             msgSensorName = "";
@@ -35,9 +35,8 @@ namespace ICSController
 
             //add to list if processing was successful 
             if (correct)
-            {
                 SaveMeasurement();
-            }
+            
         }
 
         /// <summary>

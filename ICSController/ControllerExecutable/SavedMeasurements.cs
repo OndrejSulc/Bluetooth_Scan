@@ -21,9 +21,8 @@ namespace ICSController
             {
                 receivedMeasurements.Add(newMeasurement);
             }
-            
-            return true;
 
+            return true;
         }
 
 
@@ -37,9 +36,8 @@ namespace ICSController
             bool returnVal = AddMeasurement(newMeasurement);
 
             if (returnVal)
-            {
                 return receivedMeasurements.Count;
-            }
+            
 
             return -1;
         }

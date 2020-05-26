@@ -80,6 +80,7 @@ namespace ICSController
             {
                 //wait for next evaluation window
                 Thread.Sleep(Program.EvaluationIntervalMiliseconds);
+
                 Console.WriteLine("evaluation began with " + SavedMeasurements.GetCountOfMeasurements() + " received messages");
 
                 if ( SavedMeasurements.IsEmpty() )
@@ -89,6 +90,7 @@ namespace ICSController
                 }
                 else
                 {
+                    //break loop and get back to main function
                     break;
                 }
             }
@@ -102,17 +104,16 @@ namespace ICSController
         /// <param name="evaluationBegin"></param>
         private static void PrintResults(DateTime evaluationBegin) 
         {
-            //print evaluation results
             Console.WriteLine("Evaluation results at " + evaluationBegin + ":");
             Console.WriteLine("--------------------");
-
-            //for (byte i = 0; i < measurementEvaluationList.Count; i++)
+        
             foreach (var measurementInList in measurementEvaluationList )
             {
                 if ( (measurementInList.BLE_RSSI > Program.RssiCutoff) || Program.RssiCutoff == 0)
                     measurementInList.ConsolePrint();
                    
             }
+
             Console.WriteLine("--------------------");
             Console.WriteLine("evaluation ended");
 
