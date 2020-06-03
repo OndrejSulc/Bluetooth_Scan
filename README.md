@@ -10,7 +10,7 @@ System is composed of multiple **sensors** and one **controller**. Each **sensor
 ## Setting up
 ### Sensor on ESP32 board using Arduino IDE
  1) Open **ESP32cidlo.ino** file in [Arduino IDE](https://www.arduino.cc/en/Main/Software).
- 2) Change constant at the top of program corresponding to your network.
+ 2) Change constants at the top of program corresponding to your network.
 
 ```C++
 //// ENTER NETWORK INFO HERE ////////////
@@ -34,31 +34,32 @@ const char* mqttPW = "user123pw";       // user password to your MQTT Broker
 
  ### Controller on your computer using Visual Studio
   1) Open ICSController.sln using Visual Studio
-  2) Change constant at the top of program corresponding to your network.
+  2) Change constants in Options.cs file
   ```C#
 namespace ICSController
 {
-    class Program
+    class Options
     {
-
         // MQTT Broker connection info
-        public const string MqttServerIP = "192.168.1.15";   // IPv4 address to your MQTT Broker, port is always 1883
-        public const string MqttServerUser = "user";         // user name to your MQTT Broker
-        public const string MqttServerPW = "user123pw";        // user password to your MQTT Broker
-        public const string MqttServerTopic = "testTopic/#"; // your_topic/#
-        //
-  ```
-  3) Change values based on your need
-  ```C#
+        public const string mqttServerIP = "192.168.1.15";
+        public const string mqttServerUser = "user";
+        public const string mqttServerPW = "user123pw";
+        public const string mqttServerTopic = "testTopic/#";
+
+
         // Functionality setup
-        public static int EvaluationIntervalMiliseconds { get; set; } = 10_000;
-        public static int RssiCutoff { get; set; } = 0; // RSSI < RssiCutoff will be ignored value 0 means no Cutoff
-        //
+        public static int EvaluationIntervalMiliseconds { get; set; } = 3000;
+        public static int RssiCutoff { get; set; } = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
+
+    }
+}
   ```
-  4) Build and run solution
-  5) Check for message
+  3) Build and run solution
+  4) Check for message
   ```
-  Controller running...
+Measurement receiving thread started..
+Evaluation printing thread started..
+Measurement processing thread started..
   ```
 
 
