@@ -17,9 +17,6 @@ namespace ICSController
         private static bool correct;
 
 
-        /// <summary>
-        /// Main function for message capturing thread
-        /// </summary>
         public static void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
         {
             msgSensorCategory = e.Topic;
@@ -37,10 +34,6 @@ namespace ICSController
         }
 
 
-        /// <summary>
-        /// Parses data from MQTT message and saves it to relevant variables
-        /// </summary>
-        /// <param name="msg">MQTT message in byte array</param>
         private static void ParseMessage(byte[] msg)
         {
             byte operationCounter = 0;
@@ -80,9 +73,6 @@ namespace ICSController
         }
 
 
-        /// <summary>
-        /// Creates new measurement object from private data and saves it to ReceivedMeasurements list
-        /// </summary>
         private static void SaveMeasurement() 
         {
             Measurement newMeasurement = new Measurement { 
@@ -100,9 +90,6 @@ namespace ICSController
         }
 
 
-        /// <summary>
-        /// Parses sensor name and Category from MQTT message topic
-        /// </summary>
         private static void ParseNameAndCategory() 
         {
             for (int i = msgSensorCategory.Length - 1; i != 0; i--)

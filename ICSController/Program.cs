@@ -8,17 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
+
 namespace ICSController
 {
     class Program
     {
         public static void Main()
-        {
-            MainAsync().GetAwaiter().GetResult();
-        }
-
-
-        static async Task MainAsync()
         {
             var client = new MqttClient(Options.mqttServerIP);
 
@@ -30,11 +25,15 @@ namespace ICSController
             client.Subscribe(
                 new string[] { Options.mqttServerTopic },
                 new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
-            
+
+            MainAsync().GetAwaiter().GetResult();
+        }
 
 
+        static async Task MainAsync()
+        {
             Console.WriteLine("Measurement receiving thread started..");
-            await Evaluation.StartEvaluationThread();
+            await EvaluationNamespace.Evaluation.StartEvaluationThread();
         }
     }
 }
