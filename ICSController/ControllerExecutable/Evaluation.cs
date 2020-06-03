@@ -2,44 +2,47 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ICSController
 {
     class Evaluation
     {
-        private static List<Measurement> measurementEvaluationList;
+        private static List<Measurement> measurementEvaluationList = new List<Measurement>();
+        private static readonly object measurementListLock = new object();
         private static Measurement processedMeasurement;
+
+
 
         /// <summary>
         /// Main function for evaluation thread
         /// </summary>
-        public static void EvaluationThread()
+        public static async Task StartEvaluationThread()
         {
+            Task printTask = new Task(StartEvaluationIntervalThread);
+            printTask.Start();
+
+            await ProcessMeasurement();
+        }
+
+
+        private static async Task ProcessMeasurement()
+        {
+            Console.WriteLine("Measurement processing thread started..");
+
             while (true)
             {
-                WaitForEvalWindow();
-
-                measurementEvaluationList = new List<Measurement>();
-                DateTime evaluationBegin = DateTime.Now;
-
-                while (true)
+                processedMeasurement = await SavedMeasurements.PopMeasurementAsync();
+                lock (measurementListLock)
                 {
-                    processedMeasurement = SavedMeasurements.PopMeasurement();
-
-                    // this is here in case, there won´t come any messages during evaluation
-                    if ( processedMeasurement == null )
-                        break;
-                    
-                    // if processed measurement came after evaluation begun, then ignore, break and print evaluation results 
-                    if ( DateTime.Compare( evaluationBegin, processedMeasurement.Time ) < 0)
-                        break;
-                    
                     // process measurement if same MAC already occurred
-                    if ( !PlaceIfSameMAC() )
-                        measurementEvaluationList.Add( processedMeasurement );
+                    if (!PlaceIfSameMAC())
+                    {
+                        measurementEvaluationList.Add(processedMeasurement);
+                    }
                 }
 
-                PrintResults(evaluationBegin);
+                Console.WriteLine("measurement processed");
             }
         }
 
@@ -52,14 +55,12 @@ namespace ICSController
         {
             bool registeredMAC = false;
 
-            //search for same MAC in processed measurements
             for (byte i = 0; i < measurementEvaluationList.Count; i++)
             {
                 if (measurementEvaluationList[i].BLE_MAC == processedMeasurement.BLE_MAC)
                 {
                     if (measurementEvaluationList[i].BLE_RSSI < processedMeasurement.BLE_RSSI)
                     {
-                        //replace measurement if higher RSSI
                         measurementEvaluationList[i] = processedMeasurement;
                     }
                     registeredMAC = true;
@@ -70,31 +71,32 @@ namespace ICSController
             return registeredMAC;
         }
 
-
-        /// <summary>
-        /// Thread waits given time. Then checks count of received measurements and eventually releases loop to continue in main
-        /// </summary>
-        private static void WaitForEvalWindow()
+        
+        private static void StartEvaluationIntervalThread()
         {
+            Console.WriteLine("Evaluation printing thread started..");
+            DateTime EvaluationStart;
             while (true)
             {
-                //wait for next evaluation window
-                Thread.Sleep(Program.EvaluationIntervalMiliseconds);
+                Thread.Sleep(Options.EvaluationIntervalMiliseconds);
 
-                Console.WriteLine("evaluation began with " + SavedMeasurements.GetCountOfMeasurements() + " received messages");
+                EvaluationStart = DateTime.Now;
+                Console.WriteLine("Evaluation started at " + EvaluationStart);
 
-                if ( SavedMeasurements.IsEmpty() )
+                lock (measurementListLock)
                 {
-                    Console.WriteLine("evaluation aborted");
-                    continue;
-                }
-                else
-                {
-                    //break loop and get back to main function
-                    break;
+                    if (measurementEvaluationList.Count == 0)
+                    {
+                        Console.WriteLine("Evaluation aborted: 0 measurements...");
+                        continue;
+                    }
+                    else
+                    {
+                        PrintResults();
+                        measurementEvaluationList = new List<Measurement>();
+                    }
                 }
             }
-            
         }
 
 
@@ -102,21 +104,19 @@ namespace ICSController
         /// Prints time from evaluationBegin and data stored in MeasurementEvaluationList.
         /// </summary>
         /// <param name="evaluationBegin"></param>
-        private static void PrintResults(DateTime evaluationBegin) 
+        private static void PrintResults() 
         {
-            Console.WriteLine("Evaluation results at " + evaluationBegin + ":");
+            Console.WriteLine("Evaluation results at " + DateTime.Now + ":");
             Console.WriteLine("--------------------");
-        
+           
             foreach (var measurementInList in measurementEvaluationList )
             {
-                if ( (measurementInList.BLE_RSSI > Program.RssiCutoff) || Program.RssiCutoff == 0)
-                    measurementInList.ConsolePrint();
-                   
+                if ( (measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
+                    measurementInList.PrintToConsole();
             }
 
             Console.WriteLine("--------------------");
             Console.WriteLine("evaluation ended");
-
         }
     }
 }

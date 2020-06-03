@@ -14,7 +14,7 @@ namespace ICSController
         public string BLE_MAC { get; set; }
         public sbyte BLE_RSSI { get; set; }
 
-        public void ConsolePrint() 
+        public void PrintToConsole() 
         {
             Console.WriteLine("TIME:" + Time.ToString() +
                               "\nSensor category: " + SensorCategory +

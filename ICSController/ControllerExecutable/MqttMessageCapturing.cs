@@ -29,15 +29,13 @@ namespace ICSController
             msgBLERSSI = "";
             correct = true;
             
-            // process measurement data
             ParseNameAndCategory();
             ParseMessage(e.Message);
 
-            //add to list if processing was successful 
             if (correct)
                 SaveMeasurement();
-            
         }
+
 
         /// <summary>
         /// Parses data from MQTT message and saves it to relevant variables
@@ -87,7 +85,6 @@ namespace ICSController
         /// </summary>
         private static void SaveMeasurement() 
         {
-            //create new measurement object
             Measurement newMeasurement = new Measurement { 
                 Time = DateTime.Now,
                 SensorCategory = msgSensorCategory,
@@ -96,14 +93,10 @@ namespace ICSController
                 BLE_MAC = msgBLEMAC,
                 BLE_RSSI = (sbyte)int.Parse(msgBLERSSI) };
 
-            //check print
             Console.WriteLine("\nreceived measurement");
-            newMeasurement.ConsolePrint();
+            newMeasurement.PrintToConsole();
 
-            //add to list of saved measurements
-            int countOfMeasurements = SavedMeasurements.AddMeasurementReturnCount(newMeasurement);
-            Console.WriteLine("Count of received: " + countOfMeasurements);
-
+            SavedMeasurements.AddMeasurement(newMeasurement);
         }
 
 
@@ -122,9 +115,7 @@ namespace ICSController
                 }
             }
 
-            // if there is no name then copy category
             msgSensorName = msgSensorCategory;
         }
-
     }
 }
