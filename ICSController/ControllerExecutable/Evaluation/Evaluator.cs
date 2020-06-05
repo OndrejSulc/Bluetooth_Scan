@@ -4,16 +4,24 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ICSController.EvaluationNamespace
+namespace ICSController.Evaluation
 {
-    class Evaluation  
+    class Evaluator
     {
-        public static async Task StartEvaluationThread()
+        private EvaluationData evaluationData = new EvaluationData(); //measurements are filled asynchronously by measurementProcessingTask
+        private Task measurementProcessingTask;
+
+        public Evaluator(MeasurementsChannel channelFromWhichMeasurementsAreRead)
         {
-            Task processTask =  new Task( async () => await MeasurementProcessing.ProcessMeasurement() );
-            processTask.Start();
+            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(channelFromWhichMeasurementsAreRead, evaluationData);
+            measurementProcessingTask=  new Task( async () => await measurementProcessingObj.ProcessMeasurementAsync() );
+        }
+
+
+        public async Task StartEvaluationThreadAsync()
+        {
+            measurementProcessingTask.Start();
             
-       
             Console.WriteLine("Evaluation printing thread started..");
             DateTime EvaluationStart;
 
@@ -24,9 +32,9 @@ namespace ICSController.EvaluationNamespace
                 EvaluationStart = DateTime.Now;
                 Console.WriteLine("Evaluation started at " + EvaluationStart);
 
-                lock (EvaluationData.measurementListLock)
+                lock (evaluationData.measurementListLock)
                 {
-                    if (EvaluationData.measurementEvaluationList.Count == 0)
+                    if (evaluationData.measurementEvaluationList.Count == 0)
                     {
                         Console.WriteLine("Evaluation aborted: 0 measurements...");
                         continue;
@@ -34,19 +42,19 @@ namespace ICSController.EvaluationNamespace
                     else
                     {
                         PrintResults();
-                        EvaluationData.measurementEvaluationList = new List<Measurement>();
+                        evaluationData.measurementEvaluationList = new List<Measurement>();
                     }
                 }
             }
         }
 
 
-        private static void PrintResults() 
+        private void PrintResults() 
         {
             Console.WriteLine("Evaluation results at " + DateTime.Now + ":");
             Console.WriteLine("--------------------");
            
-            foreach (var measurementInList in EvaluationData.measurementEvaluationList )
+            foreach (var measurementInList in evaluationData.measurementEvaluationList)
             {
                 if ((measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
                 {

@@ -14,8 +14,8 @@ namespace ICSController
 
 
         // Functionality setup
-        public static int EvaluationIntervalMiliseconds { get; set; } = 3000;
-        public static int RssiCutoff { get; set; } = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
+        public const int EvaluationIntervalMiliseconds = 3000;
+        public const int RssiCutoff = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
 
     }
 }

@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace ICSController
 {
-    class SavedMeasurements
+    class MeasurementsChannel
     {
-        public static Channel<Measurement> receivedMeasurementsChannel = Channel.CreateUnbounded<Measurement>();
-
-        public static bool AddMeasurement(Measurement newMeasurement)
+        public Channel<Measurement> receivedMeasurementsChannel= Channel.CreateUnbounded<Measurement>();
+              
+        public bool AddMeasurement(Measurement newMeasurement)
         {
             return receivedMeasurementsChannel.Writer.TryWrite(newMeasurement);
-            
         }
 
-
-        public static async Task<Measurement> PopMeasurementAsync() 
+        public async Task<Measurement> PopMeasurementAsync() 
         {
             while (await receivedMeasurementsChannel.Reader.WaitToReadAsync())
             {

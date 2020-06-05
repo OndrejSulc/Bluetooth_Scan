@@ -5,10 +5,17 @@ using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
 
-namespace ICSController.MqttMessageCapturingNamespace
+namespace ICSController.MqttMessageCatching
 {
-    class MqttMessageCapturing
+    class MqttMessageCatcher
     {
+        private readonly MeasurementsChannel SavedMeasurementsChannel;
+
+        public MqttMessageCatcher(MeasurementsChannel channelForSavingMeasurements)
+        {
+            SavedMeasurementsChannel = channelForSavingMeasurements;
+        }
+
         public void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
         {
             ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
@@ -28,7 +35,7 @@ namespace ICSController.MqttMessageCapturingNamespace
 
                 Console.WriteLine("\nreceived measurement");
                 Console.WriteLine(newMeasurement);
-                SavedMeasurements.AddMeasurement(newMeasurement);
+                SavedMeasurementsChannel.AddMeasurement(newMeasurement);
             }
             else
             {

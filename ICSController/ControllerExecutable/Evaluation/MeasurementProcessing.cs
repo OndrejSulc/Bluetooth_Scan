@@ -3,23 +3,33 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ICSController.EvaluationNamespace
+namespace ICSController.Evaluation
 {
     class MeasurementProcessing 
     {
-        public static async Task ProcessMeasurement()
+        private readonly MeasurementsChannel incomingMeasurementsChannel;
+        private readonly EvaluationData sharedEvalDataStorage;
+
+        public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj)
+        {
+            incomingMeasurementsChannel = channelWhereMeasurementsAreReadFrom;
+            sharedEvalDataStorage = sharedEvalDataStorageObj;
+        }
+
+
+        public async Task ProcessMeasurementAsync()
         {
             Console.WriteLine("Measurement processing thread started..");
             Measurement processedMeasurement;
 
             while (true)
             {
-                processedMeasurement = await SavedMeasurements.PopMeasurementAsync();
-                lock (EvaluationData.measurementListLock)
+                processedMeasurement = await incomingMeasurementsChannel.PopMeasurementAsync();
+                lock (sharedEvalDataStorage.measurementListLock)
                 {
                     if (!PlaceIfSameMAC(processedMeasurement))
                     {
-                        EvaluationData.measurementEvaluationList.Add(processedMeasurement);
+                        sharedEvalDataStorage.measurementEvaluationList.Add(processedMeasurement);
                     }
                 }
 
@@ -28,17 +38,17 @@ namespace ICSController.EvaluationNamespace
         }
 
 
-        private static bool PlaceIfSameMAC(Measurement processedMeasurement)
+        private bool PlaceIfSameMAC(Measurement processedMeasurement)
         {
             bool registeredMAC = false;
 
-            for (byte i = 0; i < EvaluationData.measurementEvaluationList.Count; i++)
+            for (byte i = 0; i < sharedEvalDataStorage.measurementEvaluationList.Count; i++)
             {
-                if (EvaluationData.measurementEvaluationList[i].BLE_MAC == processedMeasurement.BLE_MAC)
+                if (sharedEvalDataStorage.measurementEvaluationList[i].BLE_MAC == processedMeasurement.BLE_MAC)
                 {
-                    if (EvaluationData.measurementEvaluationList[i].BLE_RSSI < processedMeasurement.BLE_RSSI)
+                    if (sharedEvalDataStorage.measurementEvaluationList[i].BLE_RSSI < processedMeasurement.BLE_RSSI)
                     {
-                        EvaluationData.measurementEvaluationList[i] = processedMeasurement;
+                        sharedEvalDataStorage.measurementEvaluationList[i] = processedMeasurement;
                     }
                     registeredMAC = true;
                     break;

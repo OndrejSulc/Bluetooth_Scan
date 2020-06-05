@@ -6,13 +6,13 @@ namespace ICSController
 {
     class Measurement
     {
-        public DateTime Time { get; set; }
+        public DateTime Time;
 
-        public string SensorCategory { get; set; }
-        public string SensorName { get; set; }
-        public string BLE_Name { get; set; }
-        public string BLE_MAC { get; set; }
-        public sbyte BLE_RSSI { get; set; }
+        public string SensorCategory;
+        public string SensorName;
+        public string BLE_Name;
+        public string BLE_MAC;
+        public sbyte BLE_RSSI;
 
         public override string ToString() 
         {

@@ -15,10 +15,10 @@ namespace ICSController
     {
         public static async Task Main()
         {
+            MeasurementsChannel captureToProccessChannel = new MeasurementsChannel();
 
-            MqttMessageCapturingNamespace.MqttMessageCapturing mqttMessageCapturingObj = new MqttMessageCapturingNamespace.MqttMessageCapturing();
-
-
+            MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
+            Evaluation.Evaluator evaluationObj = new Evaluation.Evaluator(captureToProccessChannel);
 
 
             var client = new MqttClient(Options.mqttServerIP);
@@ -34,7 +34,7 @@ namespace ICSController
 
             
             Console.WriteLine("Measurement receiving thread started..");
-            await EvaluationNamespace.Evaluation.StartEvaluationThread();
+            await evaluationObj.StartEvaluationThreadAsync();
         }
     }
 }
