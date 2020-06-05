@@ -1,16 +1,15 @@
-﻿using ICSController.ControllerStructures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 
 
-namespace ICSController
+namespace ICSController.MqttMessageCapturingNamespace
 {
     class MqttMessageCapturing
     {
-        public static void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
+        public void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
         {
             ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
             ParsedMqttMessage parsedMessage = ParseMessage(e.Message);
@@ -38,7 +37,7 @@ namespace ICSController
         }
 
 
-        private static ParsedMqttMessage ParseMessage(byte[] msg)
+        private ParsedMqttMessage ParseMessage(byte[] msg)
         {
             ParsedMqttMessage returnObj = new ParsedMqttMessage();
             var messageString = "";
@@ -66,7 +65,7 @@ namespace ICSController
         }
 
 
-        private static ParsedMqttTopic ParseNameAndCategory(string mqttMessageTopic) 
+        private ParsedMqttTopic ParseNameAndCategory(string mqttMessageTopic) 
         {
             ParsedMqttTopic returnObj = new ParsedMqttTopic();
             for (int i = mqttMessageTopic.Length - 1; i != 0; i--)

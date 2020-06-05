@@ -15,9 +15,15 @@ namespace ICSController
     {
         public static async Task Main()
         {
+
+            MqttMessageCapturingNamespace.MqttMessageCapturing mqttMessageCapturingObj = new MqttMessageCapturingNamespace.MqttMessageCapturing();
+
+
+
+
             var client = new MqttClient(Options.mqttServerIP);
 
-            client.MqttMsgPublishReceived += MqttMessageCapturing.MeasurementReceived;
+            client.MqttMsgPublishReceived += mqttMessageCapturingObj.MeasurementReceived;
 
             var clientId = Guid.NewGuid().ToString();
             client.Connect(clientId, Options.mqttServerUser, Options.mqttServerPW);

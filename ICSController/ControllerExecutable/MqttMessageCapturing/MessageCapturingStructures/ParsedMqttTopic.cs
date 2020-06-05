@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICSController.ControllerStructures
+namespace ICSController
 {
     class ParsedMqttTopic
     {

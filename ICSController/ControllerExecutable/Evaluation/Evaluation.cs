@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ICSController.EvaluationNamespace
 {
-    class Evaluation
+    class Evaluation  
     {
         public static async Task StartEvaluationThread()
         {

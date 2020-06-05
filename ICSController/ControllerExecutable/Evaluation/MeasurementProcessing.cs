@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ICSController.EvaluationNamespace
 {
-    class MeasurementProcessing
+    class MeasurementProcessing 
     {
         public static async Task ProcessMeasurement()
         {
