@@ -7,18 +7,17 @@ namespace ICSController.EvaluationNamespace
 {
     class MeasurementProcessing
     {
-        private static Measurement processedMeasurement;
-
         public static async Task ProcessMeasurement()
         {
             Console.WriteLine("Measurement processing thread started..");
+            Measurement processedMeasurement;
 
             while (true)
             {
                 processedMeasurement = await SavedMeasurements.PopMeasurementAsync();
                 lock (EvaluationData.measurementListLock)
                 {
-                    if (!PlaceIfSameMAC())
+                    if (!PlaceIfSameMAC(processedMeasurement))
                     {
                         EvaluationData.measurementEvaluationList.Add(processedMeasurement);
                     }
@@ -29,7 +28,7 @@ namespace ICSController.EvaluationNamespace
         }
 
 
-        private static bool PlaceIfSameMAC()
+        private static bool PlaceIfSameMAC(Measurement processedMeasurement)
         {
             bool registeredMAC = false;
 

@@ -13,7 +13,7 @@ namespace ICSController
 {
     class Program
     {
-        public static void Main()
+        public static async Task Main()
         {
             var client = new MqttClient(Options.mqttServerIP);
 
@@ -26,12 +26,7 @@ namespace ICSController
                 new string[] { Options.mqttServerTopic },
                 new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
 
-            MainAsync().GetAwaiter().GetResult();
-        }
-
-
-        static async Task MainAsync()
-        {
+            
             Console.WriteLine("Measurement receiving thread started..");
             await EvaluationNamespace.Evaluation.StartEvaluationThread();
         }

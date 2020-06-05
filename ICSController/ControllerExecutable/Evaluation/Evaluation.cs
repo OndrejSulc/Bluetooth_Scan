@@ -10,7 +10,7 @@ namespace ICSController.EvaluationNamespace
     {
         public static async Task StartEvaluationThread()
         {
-            Task processTask =  new Task( () =>  MeasurementProcessing.ProcessMeasurement().GetAwaiter().GetResult() );
+            Task processTask =  new Task( async () => await MeasurementProcessing.ProcessMeasurement() );
             processTask.Start();
             
        
@@ -48,8 +48,10 @@ namespace ICSController.EvaluationNamespace
            
             foreach (var measurementInList in EvaluationData.measurementEvaluationList )
             {
-                if ( (measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
-                    measurementInList.PrintToConsole();
+                if ((measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
+                {
+                    Console.WriteLine(measurementInList);
+                }
             }
 
             Console.WriteLine("--------------------");
