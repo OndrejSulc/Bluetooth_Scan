@@ -16,11 +16,12 @@ namespace ICSController.MqttMessageCatching
 
         public void MeasurementReceived(ManagedMqttApplicationMessage message, Exception e)
         {
-            ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
             ParsedMqttMessage parsedMessage = ParseMessage(e.Message);
 
             if (parsedMessage.correctParse)
             {
+                ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
+                
                 Measurement newMeasurement = new Measurement
                 {
                     Time = DateTime.Now,
