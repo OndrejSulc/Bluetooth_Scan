@@ -34,7 +34,7 @@ namespace ICSController.Evaluation
                 {
                     await resultPrinterObj.StartEvaluationThreadAsync();
                 }
-                catch (OperationCanceledException e)
+                catch (OperationCanceledException)
                 {
                     Console.WriteLine("Evaluation printing task canceled..");
                 }
@@ -47,7 +47,7 @@ namespace ICSController.Evaluation
                 {
                     await measurementProcessingObj.ProcessMeasurementAsync();
                 }
-                catch (OperationCanceledException e)
+                catch (OperationCanceledException)
                 {
                     Console.WriteLine("Measurement processing task canceled..");
                 }
@@ -60,6 +60,7 @@ namespace ICSController.Evaluation
             Console.WriteLine("Evaluation printing task started..");
         }
 
+
         public async Task EndEvaluation()
         {
             tokenSource.Cancel();
@@ -67,6 +68,16 @@ namespace ICSController.Evaluation
             await measurementProcessingTask;
             await evaluationResultPrinterTask;
         }
+
+
+        public void DumpData()
+        {
+            lock (data.measurementListLock)
+            {
+                data.measurementEvaluationList = new List<Measurement>();
+            }
+        }
+
 
         public List<Measurement> GetMeasurements()
         {

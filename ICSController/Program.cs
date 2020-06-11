@@ -15,10 +15,10 @@ namespace ICSController
     {
         public static async Task Main()
         {
+            Options.LoadSettings();
             MeasurementsChannel captureToProccessChannel = new MeasurementsChannel();
             MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
             Evaluation.Evaluator evaluator = new Evaluation.Evaluator(captureToProccessChannel);
-
 
             var client = new MqttClient(Options.mqttServerIP);
 
