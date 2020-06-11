@@ -8,23 +8,24 @@ namespace ICSController.Evaluation
 {
     class EvaluationResultPrinter
     {
-        private EvaluationData evaluationData; 
+        private EvaluationData evaluationData;
+        private CancellationToken ct;
 
 
-        public EvaluationResultPrinter(EvaluationData sharedEvalDataStorageObj)
+        public EvaluationResultPrinter(EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
         {
             evaluationData = sharedEvalDataStorageObj;
+            ct = cancelationToken;
         }
 
 
         public async Task StartEvaluationThreadAsync()
         {
-            Console.WriteLine("Evaluation printing task started..");
             DateTime EvaluationStart;
 
             while (true)
             {
-                await Task.Delay(Options.EvaluationIntervalMiliseconds);
+                await Task.Delay(Options.EvaluationIntervalMiliseconds,ct);
 
                 EvaluationStart = DateTime.Now;
                 Console.WriteLine("Evaluation started at " + EvaluationStart);

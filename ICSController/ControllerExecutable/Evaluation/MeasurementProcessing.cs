@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
@@ -9,23 +10,27 @@ namespace ICSController.Evaluation
     {
         private readonly MeasurementsChannel incomingMeasurementsChannel;
         private readonly EvaluationData sharedEvalDataStorage;
+        private CancellationToken ct;
 
 
-        public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj)
+        public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
         {
             incomingMeasurementsChannel = channelWhereMeasurementsAreReadFrom;
             sharedEvalDataStorage = sharedEvalDataStorageObj;
+            ct = cancelationToken;
         }
 
 
         public async Task ProcessMeasurementAsync()
         {
-            Console.WriteLine("Measurement processing task started..");
+            
             Measurement processedMeasurement;
 
             while (true)
             {
-                processedMeasurement = await incomingMeasurementsChannel.PopMeasurementAsync();
+                processedMeasurement = await incomingMeasurementsChannel.PopMeasurementAsync(ct);
+                ct.ThrowIfCancellationRequested();
+
                 lock (sharedEvalDataStorage.measurementListLock)
                 {
                     if (!PlaceIfSameMAC(processedMeasurement))

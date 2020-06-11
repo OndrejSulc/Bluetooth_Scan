@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
@@ -8,27 +9,65 @@ namespace ICSController.Evaluation
     class Evaluator
     {
         private readonly EvaluationData data = new EvaluationData();
-        private readonly Task measurementProcessingTask;
-        private readonly Task evaluationResultPrinterTask;
+        private CancellationTokenSource tokenSource;
 
+        private Task measurementProcessingTask;
+        private Task evaluationResultPrinterTask;
+
+        private MeasurementsChannel incomingMeasurementsChannel;
 
         public Evaluator(MeasurementsChannel channelFromWhichMeasurementsAreRead)
         {
-            EvaluationResultPrinter resultPrinterObj = new EvaluationResultPrinter(data);
-            evaluationResultPrinterTask = new Task( async() => await resultPrinterObj.StartEvaluationThreadAsync() );
-
-            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(channelFromWhichMeasurementsAreRead, data);
-            measurementProcessingTask = new Task(async () => await measurementProcessingObj.ProcessMeasurementAsync());
+            incomingMeasurementsChannel = channelFromWhichMeasurementsAreRead;
         }
 
 
         public void StartEvaluation()
         {
+            tokenSource = new CancellationTokenSource();
+            CancellationToken ct = tokenSource.Token;
+
+            EvaluationResultPrinter resultPrinterObj = new EvaluationResultPrinter(data, ct);
+            evaluationResultPrinterTask = new Task(async () =>
+            {
+                try
+                {
+                    await resultPrinterObj.StartEvaluationThreadAsync();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Console.WriteLine("Evaluation printing task canceled..");
+                }
+            }, ct);
+
+            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(incomingMeasurementsChannel, data, ct);
+            measurementProcessingTask = new Task(async () =>
+            {
+                try
+                {
+                    await measurementProcessingObj.ProcessMeasurementAsync();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Console.WriteLine("Measurement processing task canceled..");
+                }
+            }, ct);
+
             measurementProcessingTask.Start();
+            Console.WriteLine("Measurement processing task started..");
+
             evaluationResultPrinterTask.Start();
+            Console.WriteLine("Evaluation printing task started..");
         }
 
-               
+        public async Task EndEvaluation()
+        {
+            tokenSource.Cancel();
+          
+            await measurementProcessingTask;
+            await evaluationResultPrinterTask;
+        }
+
         public List<Measurement> GetMeasurements()
         {
             lock (data.measurementListLock)
