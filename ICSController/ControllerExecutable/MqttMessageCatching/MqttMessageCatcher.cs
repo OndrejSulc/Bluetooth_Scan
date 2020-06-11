@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using uPLibrary.Networking.M2Mqtt;
-using uPLibrary.Networking.M2Mqtt.Messages;
 
 
 namespace ICSController.MqttMessageCatching
@@ -16,7 +14,7 @@ namespace ICSController.MqttMessageCatching
             SavedMeasurementsChannel = channelForSavingMeasurements;
         }
 
-        public void MeasurementReceived(object sender, MqttMsgPublishEventArgs e)
+        public void MeasurementReceived(ManagedMqttApplicationMessage message, Exception e)
         {
             ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
             ParsedMqttMessage parsedMessage = ParseMessage(e.Message);
