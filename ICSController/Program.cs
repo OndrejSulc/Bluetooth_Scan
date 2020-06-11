@@ -16,9 +16,8 @@ namespace ICSController
         public static async Task Main()
         {
             MeasurementsChannel captureToProccessChannel = new MeasurementsChannel();
-
             MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
-            Evaluation.Evaluator evaluationObj = new Evaluation.Evaluator(captureToProccessChannel);
+            Evaluation.Evaluator evaluator = new Evaluation.Evaluator(captureToProccessChannel);
 
 
             var client = new MqttClient(Options.mqttServerIP);
@@ -26,7 +25,16 @@ namespace ICSController
             client.MqttMsgPublishReceived += mqttMessageCapturingObj.MeasurementReceived;
 
             var clientId = Guid.NewGuid().ToString();
-            client.Connect(clientId, Options.mqttServerUser, Options.mqttServerPW);
+
+            try
+            {
+                client.Connect(clientId, Options.mqttServerUser, Options.mqttServerPW);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                System.Environment.Exit(1);
+            }
 
             client.Subscribe(
                 new string[] { Options.mqttServerTopic },
@@ -34,7 +42,7 @@ namespace ICSController
 
             
             Console.WriteLine("Measurement receiving thread started..");
-            await evaluationObj.StartEvaluationThreadAsync();
+            evaluator.StartEvaluation();
         }
     }
 }

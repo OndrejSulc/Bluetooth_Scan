@@ -20,9 +20,10 @@ namespace ICSController
             while (await receivedMeasurementsChannel.Reader.WaitToReadAsync())
             {
                 if (receivedMeasurementsChannel.Reader.TryRead(out var msg))
+                {
                     return msg;
+                }
             }
-            
             
             throw new System.MissingFieldException();
         }

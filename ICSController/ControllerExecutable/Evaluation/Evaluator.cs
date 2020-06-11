@@ -1,69 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
 {
     class Evaluator
     {
-        private EvaluationData evaluationData = new EvaluationData(); //measurements are filled asynchronously by measurementProcessingTask
-        private Task measurementProcessingTask;
+        private readonly EvaluationData data = new EvaluationData();
+        private readonly Task measurementProcessingTask;
+        private readonly Task evaluationResultPrinterTask;
+
 
         public Evaluator(MeasurementsChannel channelFromWhichMeasurementsAreRead)
         {
-            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(channelFromWhichMeasurementsAreRead, evaluationData);
-            measurementProcessingTask=  new Task( async () => await measurementProcessingObj.ProcessMeasurementAsync() );
+            EvaluationResultPrinter resultPrinterObj = new EvaluationResultPrinter(data);
+            evaluationResultPrinterTask = new Task( async() => await resultPrinterObj.StartEvaluationThreadAsync() );
+
+            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(channelFromWhichMeasurementsAreRead, data);
+            measurementProcessingTask = new Task(async () => await measurementProcessingObj.ProcessMeasurementAsync());
         }
 
 
-        public async Task StartEvaluationThreadAsync()
+        public void StartEvaluation()
         {
             measurementProcessingTask.Start();
-            
-            Console.WriteLine("Evaluation printing thread started..");
-            DateTime EvaluationStart;
-
-            while (true)
-            {
-                await Task.Delay(Options.EvaluationIntervalMiliseconds);
-
-                EvaluationStart = DateTime.Now;
-                Console.WriteLine("Evaluation started at " + EvaluationStart);
-
-                lock (evaluationData.measurementListLock)
-                {
-                    if (evaluationData.measurementEvaluationList.Count == 0)
-                    {
-                        Console.WriteLine("Evaluation aborted: 0 measurements...");
-                        continue;
-                    }
-                    else
-                    {
-                        PrintResults();
-                        evaluationData.measurementEvaluationList = new List<Measurement>();
-                    }
-                }
-            }
+            evaluationResultPrinterTask.Start();
         }
 
-
-        private void PrintResults() 
+               
+        public List<Measurement> GetMeasurements()
         {
-            Console.WriteLine("Evaluation results at " + DateTime.Now + ":");
-            Console.WriteLine("--------------------");
-           
-            foreach (var measurementInList in evaluationData.measurementEvaluationList)
+            lock (data.measurementListLock)
             {
-                if ((measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
-                {
-                    Console.WriteLine(measurementInList);
-                }
+                return data.measurementEvaluationList;
             }
-
-            Console.WriteLine("--------------------");
-            Console.WriteLine("evaluation ended");
         }
     }
 }

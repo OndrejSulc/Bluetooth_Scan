@@ -10,6 +10,7 @@ namespace ICSController.Evaluation
         private readonly MeasurementsChannel incomingMeasurementsChannel;
         private readonly EvaluationData sharedEvalDataStorage;
 
+
         public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj)
         {
             incomingMeasurementsChannel = channelWhereMeasurementsAreReadFrom;
@@ -19,7 +20,7 @@ namespace ICSController.Evaluation
 
         public async Task ProcessMeasurementAsync()
         {
-            Console.WriteLine("Measurement processing thread started..");
+            Console.WriteLine("Measurement processing task started..");
             Measurement processedMeasurement;
 
             while (true)
