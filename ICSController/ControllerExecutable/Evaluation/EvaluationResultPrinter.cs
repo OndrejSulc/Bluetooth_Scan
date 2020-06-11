@@ -11,13 +11,11 @@ namespace ICSController.Evaluation
         private EvaluationData evaluationData;
         private CancellationToken ct;
 
-
         public EvaluationResultPrinter(EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
         {
             evaluationData = sharedEvalDataStorageObj;
             ct = cancelationToken;
         }
-
 
         public async Task StartEvaluationThreadAsync()
         {
@@ -45,7 +43,6 @@ namespace ICSController.Evaluation
                 }
             }
         }
-
 
         private void PrintResults() 
         {

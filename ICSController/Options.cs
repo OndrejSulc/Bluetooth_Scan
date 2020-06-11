@@ -8,11 +8,12 @@ namespace ICSController
     class Options
     {
         public static string mqttServerIP;
+        public static int mqttServerPort;
         public static string mqttServerUser;
         public static string mqttServerPW;
         public static string mqttServerTopic;
         public static int EvaluationIntervalMiliseconds;
-        public static int RssiCutoff;// = 0; // RSSI < RssiCutoff will be ignored , value 0 means no Cutoff
+        public static int RssiCutoff;
         
         public static void LoadSettings()
         {
@@ -20,6 +21,7 @@ namespace ICSController
             {
                 var appSettings = ConfigurationManager.AppSettings;
                 mqttServerIP = appSettings["mqttServerIP"];
+                mqttServerPort = int.Parse(appSettings["mqttServerPort"]);
                 mqttServerUser = appSettings["mqttServerUser"];
                 mqttServerPW = appSettings["mqttServerPW"];
                 mqttServerTopic = appSettings["mqttServerTopic"];
@@ -33,6 +35,5 @@ namespace ICSController
                 System.Environment.Exit(1);
             }
         }
-
     }
 }

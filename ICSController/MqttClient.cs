@@ -28,7 +28,7 @@ namespace ICSController
             var mqttClient = factory.CreateMqttClient();
             var options = new MqttClientOptionsBuilder()
             .WithClientId(clientId)
-            .WithTcpServer(Options.mqttServerIP)
+            .WithTcpServer(Options.mqttServerIP, Options.mqttServerPort)
             .WithCredentials(Options.mqttServerUser, Options.mqttServerPW)
             .WithCleanSession()
             .Build();
@@ -41,7 +41,7 @@ namespace ICSController
         {
             mqttClient.UseConnectedHandler(async e =>
             {
-                Console.WriteLine("Connected to MQTT Broker IP: " + Options.mqttServerIP);
+                Console.WriteLine("Connected to MQTT Broker : " + Options.mqttServerIP + ":" + Options.mqttServerPort);
                 await mqttClient.SubscribeAsync(new MqttTopicFilter().Topic = Options.mqttServerTopic);
                 Console.WriteLine("Subscribed to topic: " + Options.mqttServerTopic);
             });
@@ -61,8 +61,6 @@ namespace ICSController
             });
 
             mqttClient.UseApplicationMessageReceivedHandler(e => mqttMessageCapturingObj.MeasurementReceived(e));
-
-            
         }
 
         public async Task RunMqttClient(IMqttClient mqttClient, IMqttClientOptions options)

@@ -58,7 +58,6 @@ namespace ICSController.Evaluation
             Console.WriteLine("Evaluation printing task started..");
         }
 
-
         public async Task EndEvaluation()
         {
             if (tokenSource != null)
@@ -70,7 +69,6 @@ namespace ICSController.Evaluation
             }
         }
 
-
         public void DumpData()
         {
             lock (data.measurementListLock)
@@ -78,7 +76,6 @@ namespace ICSController.Evaluation
                 data.measurementEvaluationList = new List<Measurement>();
             }
         }
-
 
         public List<Measurement> GetMeasurements()
         {

@@ -43,7 +43,6 @@ namespace ICSController.MqttMessageCatching
             }
         }
 
-
         private ParsedMqttMessage ParseMessage(string message)
         {
             ParsedMqttMessage returnObj = new ParsedMqttMessage();
@@ -64,7 +63,6 @@ namespace ICSController.MqttMessageCatching
                 return returnObj;
             }  
         }
-
 
         private ParsedMqttTopic ParseNameAndCategory(string mqttMessageTopic) 
         {

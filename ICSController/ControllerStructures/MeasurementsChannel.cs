@@ -16,7 +16,6 @@ namespace ICSController
             return receivedMeasurementsChannel.Writer.TryWrite(newMeasurement);
         }
 
-
         public async Task<Measurement> PopMeasurementAsync() 
         {
             while (await receivedMeasurementsChannel.Reader.WaitToReadAsync())
@@ -29,7 +28,6 @@ namespace ICSController
             
             throw new System.MissingFieldException();
         }
-
 
         public async Task<Measurement> PopMeasurementAsync(CancellationToken ct)
         {

@@ -12,14 +12,12 @@ namespace ICSController.Evaluation
         private readonly EvaluationData sharedEvalDataStorage;
         private CancellationToken ct;
 
-
         public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
         {
             incomingMeasurementsChannel = channelWhereMeasurementsAreReadFrom;
             sharedEvalDataStorage = sharedEvalDataStorageObj;
             ct = cancelationToken;
         }
-
 
         public async Task ProcessMeasurementAsync()
         {
@@ -42,7 +40,6 @@ namespace ICSController.Evaluation
                 Console.WriteLine("measurement processed");
             }
         }
-
 
         private bool PlaceIfSameMAC(Measurement processedMeasurement)
         {
