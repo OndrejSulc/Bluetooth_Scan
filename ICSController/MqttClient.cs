@@ -41,14 +41,14 @@ namespace ICSController
         {
             mqttClient.UseConnectedHandler(async e =>
             {
-                Console.WriteLine("### CONNECTED WITH SERVER ###");
+                Console.WriteLine("Connected to MQTT Broker IP: " + Options.mqttServerIP);
                 await mqttClient.SubscribeAsync(new MqttTopicFilter().Topic = Options.mqttServerTopic);
-                Console.WriteLine("### SUBSCRIBED ###");
+                Console.WriteLine("Subscribed to topic: " + Options.mqttServerTopic);
             });
 
             mqttClient.UseDisconnectedHandler(async e =>
             {
-                Console.WriteLine("### DISCONNECTED FROM SERVER ###");
+                Console.WriteLine("Disconnected from MQTT Broker" + Options.mqttServerIP);
                 await Task.Delay(5_000);
                 try
                 {
@@ -56,7 +56,7 @@ namespace ICSController
                 }
                 catch
                 {
-                    Console.WriteLine("### RECONNECTING FAILED ###");
+                    Console.WriteLine("Reconnecting failed..");
                 }
             });
 
