@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MQTTnet;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,13 +15,13 @@ namespace ICSController.MqttMessageCatching
             SavedMeasurementsChannel = channelForSavingMeasurements;
         }
 
-        public void MeasurementReceived(ManagedMqttApplicationMessage message, Exception e)
+        public void MeasurementReceived(MqttApplicationMessageReceivedEventArgs message)
         {
-            ParsedMqttMessage parsedMessage = ParseMessage(e.Message);
+            ParsedMqttMessage parsedMessage = ParseMessage(Encoding.UTF8.GetString(message.ApplicationMessage.Payload));
 
             if (parsedMessage.correctParse)
             {
-                ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(e.Topic);
+                ParsedMqttTopic parsedNameAndTopic = ParseNameAndCategory(message.ApplicationMessage.Topic);
                 
                 Measurement newMeasurement = new Measurement
                 {
@@ -43,17 +44,11 @@ namespace ICSController.MqttMessageCatching
         }
 
 
-        private ParsedMqttMessage ParseMessage(byte[] msg)
+        private ParsedMqttMessage ParseMessage(string message)
         {
             ParsedMqttMessage returnObj = new ParsedMqttMessage();
-            var messageString = "";
 
-            for (int i = 0; i < msg.Length; i++)
-            {
-                messageString += ((char)msg[i]);
-            }
-
-            var messageArray = messageString.Split(";");
+            var messageArray = message.Split(";");
             if (messageArray.Length == 4)
             {
                 returnObj.bleName = messageArray[0];
@@ -67,7 +62,7 @@ namespace ICSController.MqttMessageCatching
             {
                 returnObj.correctParse = false;
                 return returnObj;
-            }      
+            }  
         }
 
 
