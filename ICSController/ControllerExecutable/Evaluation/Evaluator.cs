@@ -8,19 +8,17 @@ namespace ICSController.Evaluation
 {
     class Evaluator
     {
-        private readonly EvaluationData data = new EvaluationData();
-        private CancellationTokenSource tokenSource;
+        private readonly EvaluationData data = new EvaluationData(); //shared access between tasks
+        private readonly MeasurementsChannel incomingMeasurementsChannel;
 
+        private CancellationTokenSource tokenSource;
         private Task measurementProcessingTask;
         private Task evaluationResultPrinterTask;
-
-        private MeasurementsChannel incomingMeasurementsChannel;
 
         public Evaluator(MeasurementsChannel channelFromWhichMeasurementsAreRead)
         {
             incomingMeasurementsChannel = channelFromWhichMeasurementsAreRead;
         }
-
 
         public void StartEvaluation()
         {

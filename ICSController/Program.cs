@@ -17,12 +17,12 @@ namespace ICSController
         {
             Options.LoadSettings();
             MeasurementsChannel captureToProccessChannel = new MeasurementsChannel();
-            MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
+            MqttMessageCatching.MqttMessageCatcher mqttMessageCatchingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
             Evaluation.Evaluator evaluator = new Evaluation.Evaluator(captureToProccessChannel);
 
             var client = new MqttClient(Options.mqttServerIP);
 
-            client.MqttMsgPublishReceived += mqttMessageCapturingObj.MeasurementReceived;
+            client.MqttMsgPublishReceived += mqttMessageCatchingObj.MeasurementReceived;
 
             var clientId = Guid.NewGuid().ToString();
 
@@ -32,6 +32,7 @@ namespace ICSController
             }
             catch (Exception e)
             {
+                Console.WriteLine("Connection to MQTT Broker failed..");
                 Console.WriteLine(e);
                 System.Environment.Exit(1);
             }
