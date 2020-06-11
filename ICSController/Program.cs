@@ -42,7 +42,7 @@ namespace ICSController
 
             
             Console.WriteLine("Measurement receiving thread started..");
-           
+            evaluator.StartEvaluation();
         }
     }
 }
