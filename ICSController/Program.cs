@@ -20,66 +20,16 @@ namespace ICSController
 
             MeasurementsChannel captureToProccessChannel = new MeasurementsChannel();
             MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj = new MqttMessageCatching.MqttMessageCatcher(captureToProccessChannel);
+            MqttClient mqttClientObj = new MqttClient(mqttMessageCapturingObj);
             Evaluation.Evaluator evaluator = new Evaluation.Evaluator(captureToProccessChannel);
 
-            var clientId = Guid.NewGuid().ToString();
-
-            var factory = new MqttFactory();
-            var mqttClient = factory.CreateMqttClient();
-            var options = new MqttClientOptionsBuilder()
-            .WithClientId(clientId)
-            .WithTcpServer(Options.mqttServerIP)
-            .WithCredentials(Options.mqttServerUser, Options.mqttServerPW)
-            .WithCleanSession()
-            .Build();
-
-
-            mqttClient.UseConnectedHandler(async e =>
-            {
-                Console.WriteLine("### CONNECTED WITH SERVER ###");
-
-                await mqttClient.SubscribeAsync(new MqttTopicFilter().Topic = Options.mqttServerTopic);
-
-                Console.WriteLine("### SUBSCRIBED ###");
-            });
-
-
-            mqttClient.UseDisconnectedHandler(async e =>
-            {
-                Console.WriteLine("### DISCONNECTED FROM SERVER ###");
-                await Task.Delay(5_000);
-                try
-                {
-                    await mqttClient.ConnectAsync(options);
-                }
-                catch
-                {
-                    Console.WriteLine("### RECONNECTING FAILED ###");
-                }
-            });
-
-            mqttClient.UseApplicationMessageReceivedHandler( e => mqttMessageCapturingObj.MeasurementReceived(e));
-
-            var tokenSource = new CancellationTokenSource();
-            CancellationToken ct = tokenSource.Token;
-
-            try
-            {
-                await mqttClient.ConnectAsync(options, ct);
-            }
-            catch (MqttCommunicationException e)
-            {
-                Console.WriteLine("Connection to MQTT Broker failed..");
-                Console.WriteLine(e);
-                System.Environment.Exit(1);
-            }
-
-            Console.WriteLine("Measurement receiving thread started..");
-
             evaluator.StartEvaluation();
+            await mqttClientObj.SetupAndRunMqttClient();
 
-            await Task.Delay(500_000);
-
+            while (true)
+            {
+                await Task.Delay(10_000);
+            }
         }
     }
 }

@@ -61,10 +61,13 @@ namespace ICSController.Evaluation
 
         public async Task EndEvaluation()
         {
-            tokenSource.Cancel();
-          
-            await measurementProcessingTask;
-            await evaluationResultPrinterTask;
+            if (tokenSource != null)
+            {
+                tokenSource.Cancel();
+
+                await measurementProcessingTask;
+                await evaluationResultPrinterTask;
+            }
         }
 
 
