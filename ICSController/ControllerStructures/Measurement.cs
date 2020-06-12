@@ -14,6 +14,19 @@ namespace ICSController
         public string BLE_MAC;
         public sbyte BLE_RSSI;
 
+        public Measurement CreateDeepCopy()
+        {
+            Measurement returnedM = new Measurement();
+
+            returnedM.SensorCategory = SensorCategory;
+            returnedM.SensorName = SensorName;
+            returnedM.BLE_Name = BLE_Name;
+            returnedM.BLE_MAC = BLE_MAC;
+            returnedM.BLE_RSSI = BLE_RSSI;
+
+            return returnedM;
+        }
+
         public override string ToString() 
         {
              return "TIME:" + Time.ToString() +
