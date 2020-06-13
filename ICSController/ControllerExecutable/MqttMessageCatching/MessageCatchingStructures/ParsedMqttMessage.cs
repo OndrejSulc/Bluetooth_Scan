@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICSController
+﻿namespace ICSController
 {
-    class ParsedMqttMessage
+    internal class ParsedMqttMessage
     {
-        public string bleName;
-        public string bleMAC;
-        public sbyte bleRSSI;
-        public bool correctParse;
+        public string BleName;
+        public string BleMac;
+        public sbyte BleRssi;
+        public bool CorrectParse;
     }
 }

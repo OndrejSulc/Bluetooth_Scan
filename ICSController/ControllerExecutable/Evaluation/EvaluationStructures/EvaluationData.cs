@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ICSController.Evaluation
 {
-    class EvaluationData
+    internal class EvaluationData
     {
-        public List<Measurement> measurementEvaluationList = new List<Measurement>();
-        public object measurementListLock = new object();
+        public List<Measurement> MeasurementEvaluationList = new List<Measurement>();
+        public readonly object MeasurementListLock = new object();
     }
 }

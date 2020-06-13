@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace ICSController
 {
-    class MeasurementsChannel
+    internal class MeasurementsChannel
     {
-        public Channel<Measurement> receivedMeasurementsChannel= Channel.CreateUnbounded<Measurement>();
+        private readonly Channel<Measurement> receivedMeasurementsChannel= Channel.CreateUnbounded<Measurement>();
               
         public bool AddMeasurement(Measurement newMeasurement)
         {

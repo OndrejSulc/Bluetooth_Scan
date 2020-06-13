@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICSController
+﻿namespace ICSController
 {
-    class ParsedMqttTopic
+    internal class ParsedMqttTopic
     {
-        public string name;
-        public string category;
+        public string Name;
+        public string Category;
     }
 }

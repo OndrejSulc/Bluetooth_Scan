@@ -1,39 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
 {
-    class MeasurementProcessing 
+    internal class MeasurementProcessing 
     {
         private readonly MeasurementsChannel incomingMeasurementsChannel;
         private readonly EvaluationData sharedEvalDataStorage;
-        private CancellationToken ct;
+        private readonly CancellationToken ct;
 
-        public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
+        public MeasurementProcessing(MeasurementsChannel channelWhereMeasurementsAreReadFrom, EvaluationData sharedEvalDataStorageObj, CancellationToken cancellationToken)
         {
             incomingMeasurementsChannel = channelWhereMeasurementsAreReadFrom;
             sharedEvalDataStorage = sharedEvalDataStorageObj;
-            ct = cancelationToken;
+            ct = cancellationToken;
         }
 
         public async Task ProcessMeasurementAsync()
         {
-            
-            Measurement processedMeasurement;
-
             while (true)
             {
-                processedMeasurement = await incomingMeasurementsChannel.PopMeasurementAsync(ct);
+                var processedMeasurement = await incomingMeasurementsChannel.PopMeasurementAsync(ct);
                 ct.ThrowIfCancellationRequested();
 
-                lock (sharedEvalDataStorage.measurementListLock)
+                lock (sharedEvalDataStorage.MeasurementListLock)
                 {
-                    if (!PlaceIfSameMAC(processedMeasurement))
+                    if (!PlaceIfSameMac(processedMeasurement))
                     {
-                        sharedEvalDataStorage.measurementEvaluationList.Add(processedMeasurement);
+                        sharedEvalDataStorage.MeasurementEvaluationList.Add(processedMeasurement);
                     }
                 }
 
@@ -41,24 +36,24 @@ namespace ICSController.Evaluation
             }
         }
 
-        private bool PlaceIfSameMAC(Measurement processedMeasurement)
+        private bool PlaceIfSameMac(Measurement processedMeasurement)
         {
-            bool registeredMAC = false;
+            var registeredMac = false;
 
-            for (byte i = 0; i < sharedEvalDataStorage.measurementEvaluationList.Count; i++)
+            for (byte i = 0; i < sharedEvalDataStorage.MeasurementEvaluationList.Count; i++)
             {
-                if (sharedEvalDataStorage.measurementEvaluationList[i].BLE_MAC == processedMeasurement.BLE_MAC)
+                if (sharedEvalDataStorage.MeasurementEvaluationList[i].BleMac == processedMeasurement.BleMac)
                 {
-                    if (sharedEvalDataStorage.measurementEvaluationList[i].BLE_RSSI < processedMeasurement.BLE_RSSI)
+                    if (sharedEvalDataStorage.MeasurementEvaluationList[i].BleRssi < processedMeasurement.BleRssi)
                     {
-                        sharedEvalDataStorage.measurementEvaluationList[i] = processedMeasurement;
+                        sharedEvalDataStorage.MeasurementEvaluationList[i] = processedMeasurement;
                     }
-                    registeredMAC = true;
+                    registeredMac = true;
                     break;
                 }
             }
 
-            return registeredMAC;
+            return registeredMac;
         }
     }
 }

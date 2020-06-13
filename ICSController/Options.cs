@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Configuration;
 
 namespace ICSController
 {
-    class Options
+    internal class Options
     {
-        public static string mqttServerIP;
-        public static int mqttServerPort;
-        public static string mqttServerUser;
-        public static string mqttServerPW;
-        public static string mqttServerTopic;
-        public static int EvaluationIntervalMiliseconds;
+        public static string MqttServerIp;
+        public static int MqttServerPort;
+        public static string MqttServerUser;
+        public static string MqttServerPw;
+        public static string MqttServerTopic;
+        public static int EvaluationIntervalMilliseconds;
         public static int RssiCutoff;
         
         public static void LoadSettings()
@@ -20,19 +18,19 @@ namespace ICSController
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
-                mqttServerIP = appSettings["mqttServerIP"];
-                mqttServerPort = int.Parse(appSettings["mqttServerPort"]);
-                mqttServerUser = appSettings["mqttServerUser"];
-                mqttServerPW = appSettings["mqttServerPW"];
-                mqttServerTopic = appSettings["mqttServerTopic"];
-                EvaluationIntervalMiliseconds = int.Parse(appSettings["EvaluationIntervalMiliseconds"]);
+                MqttServerIp = appSettings["mqttServerIP"];
+                MqttServerPort = int.Parse(appSettings["mqttServerPort"]);
+                MqttServerUser = appSettings["mqttServerUser"];
+                MqttServerPw = appSettings["mqttServerPW"];
+                MqttServerTopic = appSettings["mqttServerTopic"];
+                EvaluationIntervalMilliseconds = int.Parse(appSettings["EvaluationIntervalMilliseconds"]);
                 RssiCutoff = int.Parse(appSettings["RssiCutoff"]);
             }
             catch (ConfigurationErrorsException e)
             {
                 Console.WriteLine("Error reading app settings");
                 Console.WriteLine(e);
-                System.Environment.Exit(1);
+                Environment.Exit(1);
             }
         }
     }

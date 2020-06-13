@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
 {
-    class Evaluator
+    internal class Evaluator
     {
         private readonly EvaluationData data = new EvaluationData(); //shared access between tasks
         private readonly MeasurementsChannel incomingMeasurementsChannel;
@@ -23,9 +22,9 @@ namespace ICSController.Evaluation
         public void StartEvaluation()
         {
             tokenSource = new CancellationTokenSource();
-            CancellationToken ct = tokenSource.Token;
+            var ct = tokenSource.Token;
 
-            EvaluationResultPrinter resultPrinterObj = new EvaluationResultPrinter(data, ct);
+            var resultPrinterObj = new EvaluationResultPrinter(data, ct);
             evaluationResultPrinterTask = new Task(async () =>
             {
                 try
@@ -38,7 +37,7 @@ namespace ICSController.Evaluation
                 }
             }, ct);
 
-            MeasurementProcessing measurementProcessingObj = new MeasurementProcessing(incomingMeasurementsChannel, data, ct);
+            var measurementProcessingObj = new MeasurementProcessing(incomingMeasurementsChannel, data, ct);
             measurementProcessingTask = new Task(async () =>
             {
                 try
@@ -71,17 +70,17 @@ namespace ICSController.Evaluation
 
         public void DumpData()
         {
-            lock (data.measurementListLock)
+            lock (data.MeasurementListLock)
             {
-                data.measurementEvaluationList = new List<Measurement>();
+                data.MeasurementEvaluationList = new List<Measurement>();
             }
         }
 
         public List<Measurement> GetMeasurements()
         {
-            lock (data.measurementListLock)
+            lock (data.MeasurementListLock)
             {
-                return data.measurementEvaluationList;
+                return data.MeasurementEvaluationList;
             }
         }
     }

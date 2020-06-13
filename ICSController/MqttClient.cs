@@ -1,7 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
 using MQTTnet.Client;
 using MQTTnet.Exceptions;
 using MQTTnet.Client.Options;
@@ -11,13 +9,13 @@ using System.Threading;
 
 namespace ICSController
 {
-    class MqttClient
+    internal class MqttClient
     {
-        private MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj;
+        private readonly MqttMessageCatching.MqttMessageCatcher mqttMessageCapturingObj;
 
-        public MqttClient(MqttMessageCatching.MqttMessageCatcher CatcherObj)
+        public MqttClient(MqttMessageCatching.MqttMessageCatcher catcherObj)
         {
-            mqttMessageCapturingObj = CatcherObj;
+            mqttMessageCapturingObj = catcherObj;
         }
 
         public async Task SetupAndRunMqttClient()
@@ -28,8 +26,8 @@ namespace ICSController
             var mqttClient = factory.CreateMqttClient();
             var options = new MqttClientOptionsBuilder()
             .WithClientId(clientId)
-            .WithTcpServer(Options.mqttServerIP, Options.mqttServerPort)
-            .WithCredentials(Options.mqttServerUser, Options.mqttServerPW)
+            .WithTcpServer(Options.MqttServerIp, Options.MqttServerPort)
+            .WithCredentials(Options.MqttServerUser, Options.MqttServerPw)
             .WithCleanSession()
             .Build();
 
@@ -37,18 +35,18 @@ namespace ICSController
             await RunMqttClient(mqttClient, options);
         }
 
-        public void SetupMqttClient(IMqttClient mqttClient, IMqttClientOptions options)
+        private void SetupMqttClient(IMqttClient mqttClient, IMqttClientOptions options)
         {
             mqttClient.UseConnectedHandler(async e =>
             {
-                Console.WriteLine("Connected to MQTT Broker : " + Options.mqttServerIP + ":" + Options.mqttServerPort);
-                await mqttClient.SubscribeAsync(new MqttTopicFilter().Topic = Options.mqttServerTopic);
-                Console.WriteLine("Subscribed to topic: " + Options.mqttServerTopic);
+                Console.WriteLine("Connected to MQTT Broker : " + Options.MqttServerIp + ":" + Options.MqttServerPort);
+                await mqttClient.SubscribeAsync(new MqttTopicFilter().Topic = Options.MqttServerTopic);
+                Console.WriteLine("Subscribed to topic: " + Options.MqttServerTopic);
             });
 
             mqttClient.UseDisconnectedHandler(async e =>
             {
-                Console.WriteLine("Disconnected from MQTT Broker" + Options.mqttServerIP);
+                Console.WriteLine("Disconnected from MQTT Broker" + Options.MqttServerIp);
                 await Task.Delay(5_000);
                 try
                 {
@@ -63,10 +61,10 @@ namespace ICSController
             mqttClient.UseApplicationMessageReceivedHandler(e => mqttMessageCapturingObj.MeasurementReceived(e));
         }
 
-        public async Task RunMqttClient(IMqttClient mqttClient, IMqttClientOptions options)
+        private async Task RunMqttClient(IMqttClient mqttClient, IMqttClientOptions options)
         {
             var tokenSource = new CancellationTokenSource();
-            CancellationToken ct = tokenSource.Token;
+            var ct = tokenSource.Token;
 
             try
             {
@@ -76,7 +74,7 @@ namespace ICSController
             {
                 Console.WriteLine("Connection to MQTT Broker failed..");
                 Console.WriteLine(e);
-                System.Environment.Exit(1);
+                Environment.Exit(1);
             }
 
             Console.WriteLine("Measurement receiving thread started..");

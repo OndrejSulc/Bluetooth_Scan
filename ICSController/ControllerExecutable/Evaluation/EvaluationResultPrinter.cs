@@ -1,44 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ICSController.Evaluation
 {
-    class EvaluationResultPrinter
+    internal class EvaluationResultPrinter
     {
-        private EvaluationData evaluationData;
-        private CancellationToken ct;
+        private readonly EvaluationData evaluationData;
+        private readonly CancellationToken ct;
 
-        public EvaluationResultPrinter(EvaluationData sharedEvalDataStorageObj, CancellationToken cancelationToken)
+        public EvaluationResultPrinter(EvaluationData sharedEvalDataStorageObj, CancellationToken cancellationToken)
         {
             evaluationData = sharedEvalDataStorageObj;
-            ct = cancelationToken;
+            ct = cancellationToken;
         }
 
         public async Task StartEvaluationThreadAsync()
         {
-            DateTime EvaluationStart;
-
             while (true)
             {
-                await Task.Delay(Options.EvaluationIntervalMiliseconds,ct);
+                await Task.Delay(Options.EvaluationIntervalMilliseconds,ct);
 
-                EvaluationStart = DateTime.Now;
-                Console.WriteLine("Evaluation started at " + EvaluationStart);
+                var evaluationStart = DateTime.Now;
+                Console.WriteLine("Evaluation started at " + evaluationStart);
 
-                lock (evaluationData.measurementListLock)
+                lock (evaluationData.MeasurementListLock)
                 {
-                    if (evaluationData.measurementEvaluationList.Count == 0)
+                    if (evaluationData.MeasurementEvaluationList.Count == 0)
                     {
                         Console.WriteLine("Evaluation aborted: 0 measurements...");
-                        continue;
                     }
                     else
                     {
                         PrintResults();
-                        evaluationData.measurementEvaluationList = new List<Measurement>();
+                        evaluationData.MeasurementEvaluationList = new List<Measurement>();
                     }
                 }
             }
@@ -49,9 +45,9 @@ namespace ICSController.Evaluation
             Console.WriteLine("Evaluation results at " + DateTime.Now + ":");
             Console.WriteLine("--------------------");
            
-            foreach (var measurementInList in evaluationData.measurementEvaluationList)
+            foreach (var measurementInList in evaluationData.MeasurementEvaluationList)
             {
-                if ((measurementInList.BLE_RSSI > Options.RssiCutoff) || Options.RssiCutoff == 0)
+                if ((measurementInList.BleRssi > Options.RssiCutoff) || Options.RssiCutoff == 0)
                 {
                     Console.WriteLine(measurementInList);
                 }
