@@ -78,10 +78,16 @@ namespace ICSController.Evaluation
 
         public List<Measurement> GetMeasurements()
         {
+            var returnedDeepCopy = new List<Measurement>();
             lock (data.MeasurementListLock)
             {
-                return data.MeasurementEvaluationList;
+                foreach (var measurement in data.MeasurementEvaluationList)
+                {
+                    returnedDeepCopy.Add(measurement.CreateDeepCopy());
+                }
             }
+
+            return returnedDeepCopy;
         }
     }
 }

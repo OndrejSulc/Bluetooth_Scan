@@ -12,6 +12,20 @@ namespace ICSController
         public string BleMac;
         public sbyte BleRssi;
 
+        public Measurement CreateDeepCopy()
+        {
+            var returnedM = new Measurement
+            {
+                SensorCategory = SensorCategory,
+                SensorName = SensorName,
+                BleName = BleName,
+                BleMac = BleMac,
+                BleRssi = BleRssi
+            };
+
+            return returnedM;
+        }
+
         public override string ToString() 
         {
              return "TIME:" + Time +

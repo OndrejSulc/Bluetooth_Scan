@@ -3,7 +3,7 @@ using System.Configuration;
 
 namespace ICSController
 {
-    internal class Options
+    internal static class Options
     {
         public static string MqttServerIp;
         public static int MqttServerPort;
