@@ -1,11 +1,11 @@
-﻿# BLE based presence detection system 
+# BLE based presence detection system 
 
 ## Table of contents
-- [How does it work?](#-how-does-it-work?)
+- [How does it work?](#how-does-it-work)
 - [MQTT message structure](#mqtt-message-structure)
 - [Setting up](#setting-up)
-  - [Sensor](#-sensor-on-esp32-board-using-arduino-ide)
-  - [Controller](#-controller-on-your-computer-using-visual-studio)
+  - [Sensor](#sensor-on-esp32-board-using-arduino-ide)
+  - [Controller](#controller-on-your-computer-using-visual-studio)
 
 ## How does it work?
 System is composed of multiple **sensors** and one **controller**. Each **sensor** is represented by ESP32 board with BLE and WiFi modules. **Controller** is application running on network device.
