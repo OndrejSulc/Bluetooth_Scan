@@ -1,7 +1,7 @@
 ﻿# BLE based presence detection system 
 
 ## Table of contents
-- [How does it work?](#-how-does-it-work)
+- [How does it work?](#-how-does-it-work?)
 - [MQTT message structure](#mqtt-message-structure)
 - [Setting up](#setting-up)
   - [Sensor](#-sensor-on-esp32-board-using-arduino-ide)
