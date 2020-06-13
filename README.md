@@ -1,10 +1,11 @@
 ﻿# BLE based presence detection system 
 
 ## Table of contents
-- [How does it work?](##-How-does-it-work?)
-- [MQTT message structure](##MQTT-message-structure)
-- [Setting up sensor](###-Sensor-on-ESP32-board-using-Arduino-IDE)
-- [Setting up controller](###-Controller-on-your-computer-using-Visual-Studio)
+- [How does it work?](##-how-does-it-work?)
+- [MQTT message structure](##mqtt-message-structure)
+- [Setting up](##setting-up)
+  - [Sensor](###-sensor-on-esp32-board-using-arduino-ide)
+  - [Controller](###-controller-on-your-computer-using-visual-studio)
 
 ## How does it work?
 System is composed of multiple **sensors** and one **controller**. Each **sensor** is represented by ESP32 board with BLE and WiFi modules. **Controller** is application running on network device.
@@ -16,10 +17,10 @@ System is composed of multiple **sensors** and one **controller**. Each **sensor
 ## MQTT message structure
 MQTT topic is divided into category and name by last "/".
 ```example
-"building1/Floor3/area1"
+   topic = "building1/Floor3/area1"
 
-category == "building1/Floor3/"
-name == "area1"
+category = "building1/Floor3/"
+    name = "area1"
 ```
 in case there isn't any "/" , category and name are the same.
 
